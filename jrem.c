@@ -17,10 +17,30 @@ void add_cmd(int fd,char* arg)
 }
 void rm_cmd(int fd,int index)
 {
-	FILE *f_stream= fopen(fd,"w+");
+	//FILE *f_stream= fdopen(fd,"w+");
 	
 }
-void show_cmd(int fd,int index){}
+void show_cmd(int *fd,int index)
+{
+	FILE *f_stream= fdopen(&fd,"a");
+	if(f_stream==NULL){perror("fdopen()"); exit(1);}	
+	char str[60];
+	if(index==0)
+	{
+		int line =1;
+		while(fgets(str,60,f_stream)!=NULL)
+		{
+			printf("[%d] ",line);
+			puts(str);
+			++line;
+		}
+		perror("fgets()");
+
+	}
+	read(fd,str,2);
+	puts(str);
+	fclose(f_stream);
+}
 void exec_cmd(int fd, int index){}
 void find(int fd,char *){}
 
@@ -38,6 +58,9 @@ int main(int argc, char *argv[])
 		printf("can not open config file\n");
 		exit(1);
 	}
+	int*fd_ptr=&fd;
+	int **fd_ptr_= &fd_ptr;
+	printf("fd: %d\n",fd);
 	char* cmd = argv[1];
 	char* arg = argv[2];
 	switch(cmd[0])
@@ -48,6 +71,7 @@ int main(int argc, char *argv[])
 		case 'r':
 		break;
 		case 's':
+		show_cmd(&fd_ptr_,0);
 		break;
 		case 'e':
 		break;
