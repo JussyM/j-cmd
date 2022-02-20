@@ -20,25 +20,37 @@ void rm_cmd(int fd,int index)
 	//FILE *f_stream= fdopen(fd,"w+");
 	
 }
-void show_cmd(int *fd,int index)
+void show_cmd(int index)
 {
-	FILE *f_stream= fdopen(&fd,"a");
+	FILE *f_stream= fopen(".jrem","r");
 	if(f_stream==NULL){perror("fdopen()"); exit(1);}	
+	int line =1;
 	char str[60];
 	if(index==0)
 	{
-		int line =1;
+		
 		while(fgets(str,60,f_stream)!=NULL)
 		{
 			printf("[%d] ",line);
 			puts(str);
 			++line;
 		}
-		perror("fgets()");
 
+	}else
+	{
+	while(fgets(str,60,f_stream)!=NULL)
+	{
+		if(line==index)
+		{
+			printf("[%d] ",line);
+			puts(str);
+			break;
+		}else
+		{
+			++line;
+		}
 	}
-	read(fd,str,2);
-	puts(str);
+	}
 	fclose(f_stream);
 }
 void exec_cmd(int fd, int index){}
@@ -58,21 +70,19 @@ int main(int argc, char *argv[])
 		printf("can not open config file\n");
 		exit(1);
 	}
-	int*fd_ptr=&fd;
-	int **fd_ptr_= &fd_ptr;
-	printf("fd: %d\n",fd);
 	char* cmd = argv[1];
 	char* arg = argv[2];
 	switch(cmd[0])
 	{
 		case 'a':
-		add_cmd(fd,arg);
-		break;
+		{add_cmd(fd,arg);}
 		case 'r':
 		break;
 		case 's':
-		show_cmd(&fd_ptr_,0);
-		break;
+		{
+		close(fd);
+		show_cmd(atoi(arg));	
+		}
 		case 'e':
 		break;
 		case 'i':
