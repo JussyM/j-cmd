@@ -15,9 +15,9 @@ void add_cmd(int fd,char* arg)
 	write(fd,"\n",1);
 	close(fd);
 }
-void rm_cmd(int fd,int index)
+void rm_cmd(int index)
 {
-	//FILE *f_stream= fdopen(fd,"w+");
+	FILE *f_stream= fdopen(".jrem","w+");
 	
 }
 void show_cmd(int index)
@@ -26,31 +26,29 @@ void show_cmd(int index)
 	if(f_stream==NULL){perror("fdopen()"); exit(1);}	
 	int line =1;
 	char str[60];
-	if(index==0)
-	{
-		
-		while(fgets(str,60,f_stream)!=NULL)
-		{
-			printf("[%d] ",line);
-			puts(str);
-			++line;
-		}
-
-	}else
-	{
 	while(fgets(str,60,f_stream)!=NULL)
 	{
-		if(line==index)
+		if(index==0)
 		{
 			printf("[%d] ",line);
 			puts(str);
-			break;
+			++line;
 		}else
 		{
-			++line;
+			if(line==index)
+			{
+				printf("[%d] ",line);
+				puts(str);
+				break;
+			}
+			else
+			{
+				++line;
+			}
+
 		}
 	}
-	}
+	
 	fclose(f_stream);
 }
 void exec_cmd(int fd, int index){}
@@ -77,11 +75,14 @@ int main(int argc, char *argv[])
 		case 'a':
 		{add_cmd(fd,arg);}
 		case 'r':
-		break;
+		{
+			close(fd); 
+			rm_cmd(atoi(arg))
+		}
 		case 's':
 		{
-		close(fd);
-		show_cmd(atoi(arg));	
+			close(fd);
+			show_cmd(atoi(arg));	
 		}
 		case 'e':
 		break;
