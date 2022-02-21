@@ -12,12 +12,22 @@
  * @param fd
  * @param arg
  */
-void add_cmd(int fd,char* arg)
+void add_cmd(char* arg)
 {
-	int arg_size = strlen(arg);
-	write(fd,arg,arg_size);
-	write(fd,"\n",1);
-	close(fd);
+	int fd= open(".jrem",O_WRONLY|O_CREAT|O_APPEND,0666);
+	if(fd<0)
+	{
+		printf("can not open config file\n");
+		exit(1);
+	}else
+	{
+		int arg_size = strlen(arg);
+	   write(fd,arg,arg_size);
+	   write(fd,"\n",1);
+	  close(fd);
+
+	}
+	
 }
 /**
  * @brief rm_cmd
@@ -96,12 +106,28 @@ void show_cmd(int index)
  * @param fd
  * @param index
  */
-void exec_cmd(int fd, int index){}
+void exec_cmd(int fd, int index)
+{
+
+}
 /**
  * @brief find
  * @param fd
  */
-void find(int fd,char *){}
+int find(char *arg)
+{
+	FILE *f_stream= fopen(".jrem","r");
+	char temp[60];
+	int line=1;
+	while(fgets(temp,60,f_stream)!=NULL)
+	{
+		if(strcmp(arg,temp)==0) return line;
+		++line;
+	}
+	fclose(f_stream);
+	return line;
+
+}
 /**
  * @brief main
  * @param argc
@@ -110,16 +136,9 @@ void find(int fd,char *){}
  */
 int main(int argc, char *argv[])
 {
-	int fd;
 	if(argc>3)
 	{
 		printf("invalid input\n");
-		exit(1);
-	}
-	fd= open(".jrem",O_WRONLY|O_CREAT|O_APPEND,0666);
-	if(fd<0)
-	{
-		printf("can not open config file\n");
 		exit(1);
 	}
 	char* cmd = argv[1];
@@ -127,11 +146,10 @@ int main(int argc, char *argv[])
 	switch(cmd[0])
 	{
 		case 'a':
-		add_cmd(fd,arg);
+		add_cmd(arg);
 		break;
 		case 'r':
 		{
-			close(fd);
 			int index = arg==NULL ? 0 : atoi(arg);
 			rm_cmd(index);
 		}
@@ -147,6 +165,11 @@ int main(int argc, char *argv[])
 		case 'i':
 		break;
 		case 'f':
+		{
+			int result =find(arg);
+			if(result!=0) printf("The command is at line: %d\n",result);
+			else printf("No command found\n");
+		}
 		break;
 		case 'h':
 		break;
