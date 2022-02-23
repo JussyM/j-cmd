@@ -123,29 +123,9 @@ void show_cmd(int index)
  * @param fd
  * @param index
  */
-void exec_cmd(int index, char*arg)
+void exec_cmd(int index)
 {
-    char * home_dir = file_name();
-	char *tokens[1]=[arg];
-    char temp[60];
-	char err_msg[200];
-    int line =1;
-    if(index!=0)
-    {
-        FILE *f_stream= fopen(home_dir,"r");
-		while(fgets(temp,60,f_stream))
-		{
-			{
-				if(fork()==0)
-				{
-					execvp(temp,tokens);
-					sprintf(err_msg,temp);
-					perror(err_msg);
-					exit(1);
-				}
-			}
-		}
-	}
+
 }
 /**
  * @brief find
