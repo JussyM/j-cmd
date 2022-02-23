@@ -28,7 +28,7 @@ char* file_name()
 void add_cmd(char* arg)
 {
     char * home_dir = file_name();
-    fd= open(home_dir,O_WRONLY|O_CREAT|O_APPEND,0666);
+    int fd= open(home_dir,O_WRONLY|O_CREAT|O_APPEND,0666);
     if(fd<0)
     {
         printf("can not open config file\n");
