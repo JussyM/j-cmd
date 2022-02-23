@@ -14,20 +14,33 @@
  */
 void add_cmd(char* arg)
 {
-	int fd= open(".jrem",O_WRONLY|O_CREAT|O_APPEND,0666);
+	char * home_dir = file_name();
+	fd= open(home_dir,O_WRONLY|O_CREAT|O_APPEND,0666);
 	if(fd<0)
 	{
 		printf("can not open config file\n");
 		exit(1);
 	}else
 	{
-		int arg_size = strlen(arg);
+	   int arg_size = strlen(arg);
 	   write(fd,arg,arg_size);
 	   write(fd,"\n",1);
-	  close(fd);
+	   close(fd);
 
 	}
-	
+}
+
+char* file_name()
+{
+
+        char * home_dir = getenv("HOME");
+        int fd;
+        if((home_dir=getenv("HOME"))!=NULL)
+        {
+        char file_name[]="/.jrem";
+        strcat(home_dir,file_name);
+	}
+return home_dir;
 }
 /**
  * @brief rm_cmd
