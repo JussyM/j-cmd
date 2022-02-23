@@ -126,25 +126,28 @@ void show_cmd(int index)
 void exec_cmd(int index, char* arg)
 {
     char * home_dir = file_name();
-	char *tokens[1]={arg};
+	char *tokens[2]={arg};
+	printf("token at 0%s\n",tokens[0]);
     char temp[60];
 	char err_msg[200];
     int line =1;
     if(index!=0)
     {
         FILE *f_stream= fopen(home_dir,"r");
-		while(fgets(temp,60,f_stream))
+		while(fgets(temp,60,f_stream)!=NULL)
 		{
 			if(line==index)
 			{
 				if(fork()==0)
 				{
+					printf("temps: %s\ntoken: %s\n",temp,tokens[0]);
 					execvp(temp,tokens);
-					sprintf(err_msg,temp);
+					sprintf(err_msg,"exec <%s> :",temp);
 					perror(err_msg);
 					exit(1);
 				}
 			}
+			++line;
 		}
 	}
 }
@@ -175,13 +178,14 @@ int find(char *arg)
  */
 int main(int argc, char *argv[])
 {
-    if(argc>3)
+    if(argc<3)
     {
         printf("invalid input\n");
         exit(1);
     }
     char* cmd = argv[1];
     char* arg = argv[2];
+	char* arg_2 = argv[3];
 	 int index = arg==NULL ? 0 : atoi(arg);
     switch(cmd[0])
     {
@@ -195,7 +199,7 @@ int main(int argc, char *argv[])
         show_cmd(index);
         break;
     case 'e':
-		exec_cmd(index,arg);
+		exec_cmd(index,arg_2);
         break;
     case 'f':
     {
