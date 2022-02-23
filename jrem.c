@@ -123,10 +123,10 @@ void show_cmd(int index)
  * @param fd
  * @param index
  */
-void exec_cmd(int index, char*arg)
+void exec_cmd(int index, char* arg)
 {
     char * home_dir = file_name();
-	char *tokens[1]=[arg];
+	char *tokens[1]={arg};
     char temp[60];
 	char err_msg[200];
     int line =1;
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
         show_cmd(index);
         break;
     case 'e':
-		exec_cmd(index);
+		exec_cmd(index,arg);
         break;
     case 'f':
     {
