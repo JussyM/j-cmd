@@ -135,6 +135,7 @@ void exec_cmd(int index, char*arg)
         FILE *f_stream= fopen(home_dir,"r");
 		while(fgets(temp,60,f_stream))
 		{
+			if(line==index)
 			{
 				if(fork()==0)
 				{
