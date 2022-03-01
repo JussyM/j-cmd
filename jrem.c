@@ -38,9 +38,12 @@ void add_cmd(int size,char* arg[])
 		while(i<size)
 		{
 			char* input = arg[i];
-			
 			int arg_size = strlen(input);
-			write(fd,input,arg_size);
+			if(size>3)
+				{
+					write(fd,input,arg_size);
+					write(fd," ",1);
+				}
 			++i;
 		}
 		write(fd,"\n",1);
