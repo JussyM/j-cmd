@@ -43,6 +43,9 @@ void add_cmd(int size,char* arg[])
 				{
 					write(fd,input,arg_size);
 					write(fd," ",1);
+				}else
+				{
+					write(fd,input,arg_size);
 				}
 			++i;
 		}
@@ -96,7 +99,7 @@ void show_cmd(int index)
 {
 	char * home_dir = file_name();
 	FILE *f_stream= fopen(home_dir,"r");
-	if(f_stream==NULL){perror("fopen()"); exit(1);}
+	if(f_stream==NULL){printf("Nothing to show file do not exist add command to show\n"); exit(1);}
 	int line =1;
 	char str[60];
 	bool empty=true;
@@ -105,15 +108,13 @@ void show_cmd(int index)
 		empty=false;
 		if(index==0)
 		{
-			printf("[%d] ",line);
-			puts(str);
+			printf("[%d] %s",line,str);
 			++line;
 		}else
 		{
 			if(line==index)
 			{
-				printf("[%d] ",line);
-				puts(str);
+				printf("[%d] %s",line,str);
 				break;
 			}
 			else
@@ -187,11 +188,6 @@ int find(char *arg)
  */
 int main(int argc, char *argv[])
 {
-	if(argc<3)
-	{
-		printf("invalid input\n");
-		exit(1);
-	}
 	char* cmd = argv[1];
 	char* arg = argv[2];
 	char* arg_2 = argv[3];
