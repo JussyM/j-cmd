@@ -18,6 +18,7 @@ char* file_name()
 	}
 	return home_dir;
 }
+int find(char*);
 
 /**
  * @brief add_cmd
@@ -135,10 +136,9 @@ void show_cmd(int index)
 void exec_cmd(int index, char* arg)
 {
 	char * home_dir = file_name();
-	char *tokens[2]={arg};
-	printf("token at 0%s\n",tokens[0]);
 	char temp[60];
 	char err_msg[200];
+	char*tokens[100];
 	int line =1;
 	if(index!=0)
 	{
@@ -147,10 +147,13 @@ void exec_cmd(int index, char* arg)
 		{
 			if(line==index)
 			{
+				int i=0;
+				tokens[i]=strtok(temp," ");
+				while(tokens[i]!=NULL)tokens[++i]=strtok(temp," ");
 				if(fork()==0)
 				{
 					printf("temps: %s\ntoken: %s\n",temp,tokens[0]);
-					execvp(temp,tokens);
+					execvp(tokens[0],tokens);
 					sprintf(err_msg,"exec <%s> :",temp);
 					perror(err_msg);
 					exit(1);
@@ -166,22 +169,17 @@ void exec_cmd(int index, char* arg)
  */
 int find(char *arg)
 {
-	printf("holla");
 	char * home_dir = file_name();
-	printf("lola");
 	FILE *f_stream= fopen(home_dir,"r");
-	printf("blabla");
 	char temp[60];
-	printf("tralala");
 	int line=1;
-	printf("lalu");
 	while(fgets(temp,60,f_stream)!=NULL)
 	{
 		if(strstr(temp,arg)!=NULL) return line;
 		++line;
 	}
 	fclose(f_stream);
-	return line;
+	return 0;
 
 }
 /**
@@ -193,8 +191,10 @@ int find(char *arg)
 int main(int argc, char *argv[])
 {
 	char* cmd = argv[1];
-	char* arg = argv[2];
-	char* arg_2 = argv[3];
+	char *arg=argv[2];
+	char *arg_2;
+	if(argc>3)
+		arg_2=argv[3];
 	int index = arg==NULL ? 0 : atoi(arg);
 	switch(cmd[0])
 	{
@@ -208,11 +208,14 @@ int main(int argc, char *argv[])
 		show_cmd(index);
 		break;
 		case 'e':
+		{
+			printf("hello");	
 		exec_cmd(index,arg_2);
+		}
 		break;
 		case 'f':
 		{
-			int result =find(arg_2);
+			int result =find(arg);
 			if(result!=0) printf("The command is at line: %d\n",result);
 			else printf("No command found\n");
 		}
