@@ -77,7 +77,6 @@ void rm_cmd(int index)
 
 			}
 			++line;
-
 		}
 		fclose(f_stream);
 		fclose(f_stream_dup);
@@ -167,13 +166,18 @@ void exec_cmd(int index, char* arg)
  */
 int find(char *arg)
 {
+	printf("holla");
 	char * home_dir = file_name();
+	printf("lola");
 	FILE *f_stream= fopen(home_dir,"r");
+	printf("blabla");
 	char temp[60];
+	printf("tralala");
 	int line=1;
+	printf("lalu");
 	while(fgets(temp,60,f_stream)!=NULL)
 	{
-		if(strcmp(arg,temp)==0) return line;
+		if(strstr(temp,arg)!=NULL) return line;
 		++line;
 	}
 	fclose(f_stream);
@@ -208,7 +212,7 @@ int main(int argc, char *argv[])
 		break;
 		case 'f':
 		{
-			int result =find(arg);
+			int result =find(arg_2);
 			if(result!=0) printf("The command is at line: %d\n",result);
 			else printf("No command found\n");
 		}
