@@ -1,3 +1,14 @@
+/**
+ * jrem is a shell command to store
+ * any other command that you don't want to forget
+ * and use it at any time. The basic argument of jrem
+ * is jrem add [cmd], jrem rm [index],
+ * jrem show | jrem show [index], jrem exec [index],
+ * jrem find [cmd]. More combination will be added with
+ * time.
+ * A great thanks to Maciej who help me to correct the code
+ * and make it nice and functionnal.
+ */
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdbool.h>
@@ -9,6 +20,13 @@
 #include <unistd.h>
 FILE * get_file_stream();
 FILE * get_dup_file_stream();
+/**
+ * return an allocator of char* pointing to the home directory of the user
+ * @brief file_name return the complet path of where to store the file.
+ * @param file_id if the file_id ==0 simply mean the path to store a normal
+ * file while if not the function will return the path to store the temporaire file
+ * @return a path of the default file location.
+ */
 char* file_name(int file_id)
 {
 	char * home_dir = getenv("HOME");
@@ -26,9 +44,9 @@ char* file_name(int file_id)
 }
 
 /**
- * @brief add_cmd
- * @param fd
- * @param arg
+ * @brief add_cmd simply store the input of the user to the config file
+ * @param size number of argument given by the main
+ * @param arg char** where all the user input are store
  */
 void add_cmd(int size,char* arg[])
 {
@@ -63,8 +81,12 @@ void add_cmd(int size,char* arg[])
 
 
 /**
- * @brief rm_cmd
- * @param index
+ * @brief rm_cmd delete an input from the default file.
+ * The algorithm creat a temporaly file where to store
+ * all the line that's not mention by the user this file
+ * will now be rename into the real default file while
+ * the old_file will be removed.
+ * @param index the line where the command will be removed
  */
 void rm_cmd(int index)
 {
@@ -76,7 +98,11 @@ void rm_cmd(int index)
 		FILE *f_stream_dup=get_dup_file_stream();
 		char* file_name_ =file_name(0);
 		char * file_name_dup = file_name(1); 
-		if(f_stream==NULL){printf("Error file not found to create the file use add command\n"); exit(1);}
+        if(f_stream==NULL)
+        {
+            printf("Error file not found to create the file use add command\n");
+            exit(1);
+        }
 		while(fgets(temp,60,f_stream)!=NULL)
 		{
 			if(line!=index)
@@ -100,13 +126,19 @@ void rm_cmd(int index)
 
 }
 /**
- * @brief show_cmd
- * @param index
+ * @brief show_cmd print to stdout all the command in the file.
+ * if the index==0 the function print all the command but if not
+ * simply print the index ask by the user.
+ * @param index line to be print.
  */
 void show_cmd(int index)
 {
 	FILE*f_stream= get_file_stream();
-	if(f_stream==NULL){ perror("fopen()");printf("Nothing to show file do not exist add command to show\n"); exit(1);}
+    if(f_stream==NULL)
+    {
+        printf("Nothing to show file do not exist add command to show\n");
+        exit(1);
+    }
 	int line =1;
 	char str[60];
 	bool empty=true;
@@ -136,9 +168,11 @@ void show_cmd(int index)
 	fclose(f_stream);
 }
 /**
- * @brief exec_cmd
- * @param fd
- * @param index
+ * @brief exec_cmd This function execute the command ask by the user by given the index.
+ * Warning : This function use system to execute the command, no command
+ * verification is done so be careful don't put command that you can no handle
+ * @param index the specifiq line that will be execute.
+ * @param arg the command arg if useful.
  */
 void exec_cmd(int index, char* arg)
 {
@@ -164,13 +198,18 @@ void exec_cmd(int index, char* arg)
 	}
 }
 /**
- * @brief find
- * @param fd
+ * @brief find in the file if a command exist in the file.
+ * It print all the occurrence seen in the file
+ * @param arg the input given for searching in the file.
  */
 void find(char *arg)
 {
 	FILE *f_stream= get_file_stream();
-	if(f_stream==NULL){printf("Error find not found to create the file use add command\n"); exit(1);}
+    if(f_stream==NULL)
+    {
+        printf("Error find not found to create the file use add command\n");
+        exit(1);
+    }
 	char temp[60];
 	int line=1;
 	int cpt=0;
@@ -186,6 +225,10 @@ void find(char *arg)
 	fclose(f_stream);
 	printf("We found %d occurrence(s).\n",cpt);
 }
+/**
+ * @brief get_file_stream return the stream of the default file
+ * @return FILE*
+ */
 FILE * get_file_stream()
 {
 	char * home_dir = file_name(0);
@@ -193,6 +236,10 @@ FILE * get_file_stream()
 	free(home_dir);
 	return f_stream;
 }
+/**
+ * @brief get_dup_file_stream return the stream of the temporary file
+ * @return FILE*
+ */
 FILE * get_dup_file_stream()
 {
 	char* home_dir=file_name(1);
@@ -202,18 +249,17 @@ FILE * get_dup_file_stream()
 }
 
 /**
- * @brief main
- * @param argc
- * @param argv
- * @return
+ * @brief main Entry point of the function
+ * @param argc size of argv
+ * @param argv user input
+ * @return 0
  */
 int main(int argc, char *argv[])
 {
 	char* cmd = argv[1];
 	char *arg=argv[2];
 	char *arg_2="";
-	if(argc>3)
-		arg_2=argv[3];
+	if(argc>3)arg_2=argv[3];
 	int index = arg==NULL ? 0 : atoi(arg);
 	switch(cmd[0])
 	{
@@ -233,6 +279,23 @@ int main(int argc, char *argv[])
 		find(arg);
 		break;
 		case 'h':
+        printf("How to use:"
+               "\n==>program_name program_cmd arg"
+               "\n Ex: jrem add..."
+               "\n     jrem show..."
+               "\n==>program_name : jrem"
+               "\n==>program_cmd: add, show, rm, exec, find."
+               "\n==>Each program_cmd has his specific argument."
+               "\n==>add or find take string as argument"
+               "\n $jrem add ls"
+               "\n $jrem find ls"
+               "\n==>rm or exec take integer as argument"
+               "\n $jrem rm 1"
+               "\n $jrem exec 2"
+               "\n==>default cmd which do not necessary take argument"
+               "\n $jrem show or "
+               "\n $jrem show 1"
+              "\n");
 		break;
 		default:
 		printf("Unknow command\n");
