@@ -167,18 +167,25 @@ void exec_cmd(int index, char* arg)
  * @brief find
  * @param fd
  */
-int find(char *arg)
+void find(char *arg)
 {
 	char * home_dir = file_name();
 	FILE *f_stream= fopen(home_dir,"r");
+	if(f_stream==NULL)printf("Error find not found to create the file use add command/n");
 	char temp[60];
 	int line=1;
+	int cpt=0;
 	while(fgets(temp,60,f_stream)!=NULL)
 	{
-		if(strstr(temp,arg)!=NULL) return line;
+		if(strstr(temp,arg)!=NULL)
+		{
+				show_cmd(line);
+				cpt++;
+		} 
 		++line;
 	}
 	fclose(f_stream);
+	printf("We found %d occurrence(s)./n",cpt);
 	return 0;
 
 }
@@ -214,11 +221,7 @@ int main(int argc, char *argv[])
 		}
 		break;
 		case 'f':
-		{
-			int result =find(arg);
-			if(result!=0) printf("The command is at line: %d\n",result);
-			else printf("No command found\n");
-		}
+			find(arg);
 		break;
 		case 'h':
 		break;
