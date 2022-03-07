@@ -98,11 +98,11 @@ void rm_cmd(int index)
 		FILE *f_stream_dup=get_dup_file_stream();
 		char* file_name_ =file_name(0);
 		char * file_name_dup = file_name(1); 
-        if(f_stream==NULL)
-        {
-            printf("Error file not found to create the file use add command\n");
-            exit(1);
-        }
+		if(f_stream==NULL)
+		{
+			printf("Error file not found to create the file use add command\n");
+			exit(1);
+		}
 		while(fgets(temp,60,f_stream)!=NULL)
 		{
 			if(line!=index)
@@ -134,11 +134,11 @@ void rm_cmd(int index)
 void show_cmd(int index)
 {
 	FILE*f_stream= get_file_stream();
-    if(f_stream==NULL)
-    {
-        printf("Nothing to show file do not exist add command to show\n");
-        exit(1);
-    }
+	if(f_stream==NULL)
+	{
+		printf("Nothing to show file do not exist add command to show\n");
+		exit(1);
+	}
 	int line =1;
 	char str[60];
 	bool empty=true;
@@ -188,7 +188,7 @@ void exec_cmd(int index, char* arg)
 			{
 				if(arg!=NULL && arg[0]!='\0')
 				{
-					strcat(temp," ");
+					strtok(temp,"\n");
 					strcat(temp,arg);
 				}
 				system(temp);
@@ -205,11 +205,11 @@ void exec_cmd(int index, char* arg)
 void find(char *arg)
 {
 	FILE *f_stream= get_file_stream();
-    if(f_stream==NULL)
-    {
-        printf("Error find not found to create the file use add command\n");
-        exit(1);
-    }
+	if(f_stream==NULL)
+	{
+		printf("Error find not found to create the file use add command\n");
+		exit(1);
+	}
 	char temp[60];
 	int line=1;
 	int cpt=0;
@@ -279,23 +279,23 @@ int main(int argc, char *argv[])
 		find(arg);
 		break;
 		case 'h':
-        printf("How to use:"
-               "\n==>program_name program_cmd arg"
-               "\n Ex: jrem add..."
-               "\n     jrem show..."
-               "\n==>program_name : jrem"
-               "\n==>program_cmd: add, show, rm, exec, find."
-               "\n==>Each program_cmd has his specific argument."
-               "\n==>add or find take string as argument"
-               "\n $jrem add ls"
-               "\n $jrem find ls"
-               "\n==>rm or exec take integer as argument"
-               "\n $jrem rm 1"
-               "\n $jrem exec 2"
-               "\n==>default cmd which do not necessary take argument"
-               "\n $jrem show or "
-               "\n $jrem show 1"
-              "\n");
+		printf("How to use:"
+			"\n==>program_name program_cmd arg"
+			"\n Ex: jrem add..."
+			"\n     jrem show..."
+			"\n==>program_name : jrem"
+			"\n==>program_cmd: add, show, rm, exec, find."
+			"\n==>Each program_cmd has his specific argument."
+			"\n==>add or find take string as argument"
+			"\n $jrem add ls"
+			"\n $jrem find ls"
+			"\n==>rm or exec take integer as argument"
+			"\n $jrem rm 1"
+			"\n $jrem exec 2"
+			"\n==>default cmd which do not necessary take argument"
+			"\n $jrem show or "
+			"\n $jrem show 1"
+			"\n");
 		break;
 		default:
 		printf("Unknow command\n");
