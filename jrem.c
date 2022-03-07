@@ -10,6 +10,8 @@
  * and make it nice and functionnal.
  */
 #define _GNU_SOURCE
+#define DEFAULT_FILE_ID 0
+#define TEMP_FILE_ID 1
 #include <stdio.h>
 #include <stdbool.h>
 #include <sys/types.h>
@@ -50,7 +52,7 @@ char* file_name(int file_id)
  */
 void add_cmd(int size,char* arg[])
 {
-	char * home_dir = file_name(0);
+	char * home_dir = file_name(DEFAULT_FILE_ID);
 	int fd= open(home_dir,O_WRONLY|O_CREAT|O_APPEND,0666);
 	if(fd<0)
 	{
@@ -96,8 +98,8 @@ void rm_cmd(int index)
 	{
 		FILE*f_stream= get_file_stream();
 		FILE *f_stream_dup=get_dup_file_stream();
-		char* file_name_ =file_name(0);
-		char * file_name_dup = file_name(1); 
+		char* file_name_ =file_name(DEFAULT_FILE_ID);
+		char * file_name_dup = file_name(TEMP_FILE_ID); 
 		if(f_stream==NULL)
 		{
 			printf("Error file not found to create the file use add command\n");
@@ -231,7 +233,7 @@ void find(char *arg)
  */
 FILE * get_file_stream()
 {
-	char * home_dir = file_name(0);
+	char * home_dir = file_name(DEFAULT_FILE_ID);
 	FILE *f_stream= fopen(home_dir,"r");
 	free(home_dir);
 	return f_stream;
@@ -242,7 +244,7 @@ FILE * get_file_stream()
  */
 FILE * get_dup_file_stream()
 {
-	char* home_dir=file_name(1);
+	char* home_dir=file_name(TEMP_FILE_ID);
 	FILE *f_stream= fopen(home_dir,"w+");
 	free(home_dir);
 	return f_stream;
