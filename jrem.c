@@ -8,15 +8,15 @@
 #include <string.h>
 #include <unistd.h>
 FILE * get_file_stream();
-char* file_name()
+FILE * get_dup_file_stream();
+char* file_name(int file_id)
 {
-
 	char * home_dir = getenv("HOME");
-	if((home_dir=getenv("HOME"))!=NULL)
-	{
-		char file_name[]="/.jrem";
-		strcat(home_dir,file_name);
-	}
+	char* file_name;
+	if(file_id!=0)file_name= "/.jrem-dup";
+	else file_name="/.jrem";
+	
+	if(home_dir!=NULL)strcat(home_dir,file_name);
 	return home_dir;
 }
 
@@ -27,7 +27,7 @@ char* file_name()
  */
 void add_cmd(int size,char* arg[])
 {
-	char * home_dir = file_name();
+	char * home_dir = file_name(0);
 	int fd= open(home_dir,O_WRONLY|O_CREAT|O_APPEND,0666);
 	if(fd<0)
 	{
@@ -63,13 +63,16 @@ void add_cmd(int size,char* arg[])
  */
 void rm_cmd(int index)
 {
+	printf("bal");
 	char temp[60];
 	int line =1;
 	if(index!=0)
 	{
-		FILE *f_stream= get_file_stream();
-		if(f_stream==NULL){printf("Error find not found to create the file use add command\n"); exit(1);}
-		FILE *f_stream_dup = fopen(".jrem-dup","w");
+		FILE*f_stream= get_file_stream();
+		FILE *f_stream_dup=get_dup_file_stream();
+		char* file_name_ =file_name(0);
+		char * file_name_dup = file_name(1); 
+		if(f_stream==NULL){printf("Error file not found to create the file use add command\n"); exit(1);}
 		while(fgets(temp,60,f_stream)!=NULL)
 		{
 			if(line!=index)
@@ -80,8 +83,8 @@ void rm_cmd(int index)
 		}
 		fclose(f_stream);
 		fclose(f_stream_dup);
-		remove(".jrem");
-		rename(".jrem-dup",".jrem");
+		remove(file_name_);
+		rename(file_name_dup,file_name_);
 
 	}else
 	{
@@ -179,10 +182,18 @@ void find(char *arg)
 }
 FILE * get_file_stream()
 {
-	char * home_dir = file_name();
+	char * home_dir = file_name(0);
 	FILE *f_stream= fopen(home_dir,"r");
 	return f_stream;
 }
+FILE * get_dup_file_stream()
+{
+	char* home_dir=file_name(1);
+	printf(home_dir);
+	FILE *f_stream= fopen(home_dir,"w+");
+	return f_stream;
+}
+
 /**
  * @brief main
  * @param argc
