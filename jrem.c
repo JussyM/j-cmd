@@ -6,7 +6,7 @@
  * jrem show | jrem show [index], jrem exec [index],
  * jrem find [cmd]. More combination will be added with
  * time.
- * A great thanks to Maciej who help me to correct the code
+ * A great thanks to Maciej Rolecki who help me to correct the code
  * and make it nice and functionnal.
  */
 #define _GNU_SOURCE
@@ -258,6 +258,11 @@ FILE * get_dup_file_stream()
  */
 int main(int argc, char *argv[])
 {
+	if(argc<2)
+	{ 
+	printf("Error Unknow Input\n");
+	 exit(1);
+	}
 	char* cmd = argv[1];
 	char *arg=argv[2];
 	char *arg_2="";
