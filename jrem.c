@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+FILE * get_file_stream();
 char* file_name()
 {
 
@@ -18,7 +19,6 @@ char* file_name()
 	}
 	return home_dir;
 }
-int find(char*);
 
 /**
  * @brief add_cmd
@@ -63,19 +63,18 @@ void add_cmd(int size,char* arg[])
  */
 void rm_cmd(int index)
 {
-	char * home_dir = file_name();
 	char temp[60];
 	int line =1;
 	if(index!=0)
 	{
-		FILE *f_stream= fopen(home_dir,"r");
+		FILE *f_stream= get_file_stream();
+		if(f_stream==NULL){printf("Error find not found to create the file use add command\n"); exit(1);}
 		FILE *f_stream_dup = fopen(".jrem-dup","w");
 		while(fgets(temp,60,f_stream)!=NULL)
 		{
 			if(line!=index)
 			{
 				fputs(temp,f_stream_dup);
-
 			}
 			++line;
 		}
@@ -97,9 +96,8 @@ void rm_cmd(int index)
  */
 void show_cmd(int index)
 {
-	char * home_dir = file_name();
-	FILE *f_stream= fopen(home_dir,"r");
-	if(f_stream==NULL){printf("Nothing to show file do not exist add command to show\n"); exit(1);}
+	FILE*f_stream= get_file_stream();
+	if(f_stream==NULL){ perror("fopen()");printf("Nothing to show file do not exist add command to show\n"); exit(1);}
 	int line =1;
 	char str[60];
 	bool empty=true;
@@ -135,29 +133,22 @@ void show_cmd(int index)
  */
 void exec_cmd(int index, char* arg)
 {
-	char * home_dir = file_name();
 	char temp[60];
-	char err_msg[200];
-	char*tokens[100];
 	int line =1;
 	if(index!=0)
 	{
-		FILE *f_stream= fopen(home_dir,"r");
+		FILE *f_stream= get_file_stream();
+		if(f_stream==NULL){printf("Error find not found to create the file use add command\n"); exit(1);}
 		while(fgets(temp,60,f_stream)!=NULL)
 		{
 			if(line==index)
 			{
-				int i=0;
-				tokens[i]=strtok(temp," ");
-				while(tokens[i]!=NULL)tokens[++i]=strtok(temp," ");
-				if(fork()==0)
+				if(arg!=NULL && arg[0]!='\0')
 				{
-					printf("temps: %s\ntoken: %s\n",temp,tokens[0]);
-					execvp(tokens[0],tokens);
-					sprintf(err_msg,"exec <%s> :",temp);
-					perror(err_msg);
-					exit(1);
+					strcat(temp," ");
+					strcat(temp,arg);
 				}
+				system(temp);
 			}
 			++line;
 		}
@@ -169,9 +160,8 @@ void exec_cmd(int index, char* arg)
  */
 void find(char *arg)
 {
-	char * home_dir = file_name();
-	FILE *f_stream= fopen(home_dir,"r");
-	if(f_stream==NULL)printf("Error find not found to create the file use add command/n");
+	FILE *f_stream= get_file_stream();
+	if(f_stream==NULL){printf("Error find not found to create the file use add command\n"); exit(1);}
 	char temp[60];
 	int line=1;
 	int cpt=0;
@@ -179,15 +169,19 @@ void find(char *arg)
 	{
 		if(strstr(temp,arg)!=NULL)
 		{
-				show_cmd(line);
+				printf("[%d] %s",line,temp);
 				cpt++;
 		} 
 		++line;
 	}
 	fclose(f_stream);
-	printf("We found %d occurrence(s)./n",cpt);
-	return 0;
-
+	printf("We found %d occurrence(s).\n",cpt);
+}
+FILE * get_file_stream()
+{
+	char * home_dir = file_name();
+	FILE *f_stream= fopen(home_dir,"r");
+	return f_stream;
 }
 /**
  * @brief main
@@ -199,7 +193,7 @@ int main(int argc, char *argv[])
 {
 	char* cmd = argv[1];
 	char *arg=argv[2];
-	char *arg_2;
+	char *arg_2="";
 	if(argc>3)
 		arg_2=argv[3];
 	int index = arg==NULL ? 0 : atoi(arg);
@@ -215,10 +209,7 @@ int main(int argc, char *argv[])
 		show_cmd(index);
 		break;
 		case 'e':
-		{
-			printf("hello");	
 		exec_cmd(index,arg_2);
-		}
 		break;
 		case 'f':
 			find(arg);
