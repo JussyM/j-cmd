@@ -13,11 +13,16 @@ char* file_name(int file_id)
 {
 	char * home_dir = getenv("HOME");
 	char* file_name;
-	if(file_id!=0)file_name= "/.jrem-dup";
-	else file_name="/.jrem";
-	
-	if(home_dir!=NULL)strcat(home_dir,file_name);
-	return home_dir;
+	if(file_id==0)file_name= "/.jrem";
+	else file_name="/.jrem-dup";
+	char * home_dir_ptr = NULL; 
+	if(home_dir!=NULL)
+	{
+		home_dir_ptr=(char*)malloc((strlen(home_dir)+strlen(file_name))+1);
+		strcpy(home_dir_ptr,home_dir);
+		strcat(home_dir_ptr,file_name);
+	}
+	return home_dir_ptr;
 }
 
 /**
@@ -41,13 +46,13 @@ void add_cmd(int size,char* arg[])
 			char* input = arg[i];
 			int arg_size = strlen(input);
 			if(size>3)
-				{
-					write(fd,input,arg_size);
-					write(fd," ",1);
-				}else
-				{
-					write(fd,input,arg_size);
-				}
+			{
+				write(fd,input,arg_size);
+				write(fd," ",1);
+			}else
+			{
+				write(fd,input,arg_size);
+			}
 			++i;
 		}
 		write(fd,"\n",1);
@@ -63,7 +68,6 @@ void add_cmd(int size,char* arg[])
  */
 void rm_cmd(int index)
 {
-	printf("bal");
 	char temp[60];
 	int line =1;
 	if(index!=0)
@@ -85,6 +89,8 @@ void rm_cmd(int index)
 		fclose(f_stream_dup);
 		remove(file_name_);
 		rename(file_name_dup,file_name_);
+		free(file_name_);
+		free(file_name_dup);
 
 	}else
 	{
@@ -172,8 +178,8 @@ void find(char *arg)
 	{
 		if(strstr(temp,arg)!=NULL)
 		{
-				printf("[%d] %s",line,temp);
-				cpt++;
+			printf("[%d] %s",line,temp);
+			cpt++;
 		} 
 		++line;
 	}
@@ -184,13 +190,14 @@ FILE * get_file_stream()
 {
 	char * home_dir = file_name(0);
 	FILE *f_stream= fopen(home_dir,"r");
+	free(home_dir);
 	return f_stream;
 }
 FILE * get_dup_file_stream()
 {
 	char* home_dir=file_name(1);
-	printf(home_dir);
 	FILE *f_stream= fopen(home_dir,"w+");
+	free(home_dir);
 	return f_stream;
 }
 
@@ -223,7 +230,7 @@ int main(int argc, char *argv[])
 		exec_cmd(index,arg_2);
 		break;
 		case 'f':
-			find(arg);
+		find(arg);
 		break;
 		case 'h':
 		break;
