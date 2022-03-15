@@ -54,6 +54,7 @@ void add_cmd(int size,char* arg[])
 {
 	char * home_dir = file_name(DEFAULT_FILE_ID);
 	int fd= open(home_dir,O_WRONLY|O_CREAT|O_APPEND,0666);
+	bool comment=false;
 	if(fd<0)
 	{
 		printf("can not open config file\n");
@@ -65,10 +66,19 @@ void add_cmd(int size,char* arg[])
 		{
 			char* input = arg[i];
 			int arg_size = strlen(input);
+			if(strcmp(input,"-c")==0)
+			{
+				comment=true;
+				input="#";
+				arg_size= strlen(input);
+			}
 			if(size>3)
 			{
+
 				write(fd,input,arg_size);
+				if(!comment)
 				write(fd," ",1);
+				else comment=false;
 			}else
 			{
 				write(fd,input,arg_size);
@@ -188,6 +198,7 @@ void exec_cmd(int index, char* arg)
 		{
 			if(line==index)
 			{
+				if(strchr(temp,'#')!=NULL) strtok(temp,"#");
 				if(arg!=NULL && arg[0]!='\0')
 				{
 					strtok(temp,"\n");
@@ -260,8 +271,8 @@ int main(int argc, char *argv[])
 {
 	if(argc<2)
 	{ 
-	printf("Error Unknow Input\n");
-	 exit(1);
+		printf("command incomplet use jrem help\n");
+		exit(1);
 	}
 	char* cmd = argv[1];
 	char *arg=argv[2];
