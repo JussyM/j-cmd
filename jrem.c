@@ -193,7 +193,11 @@ void exec_cmd(int index, char* arg)
 	if(index!=0)
 	{
 		FILE *f_stream= get_file_stream();
-		if(f_stream==NULL){printf("Error find not found to create the file use add command\n"); exit(1);}
+		if(f_stream==NULL)
+			{
+				printf("Error find not found to create the file use add command\n"); 
+				exit(1);
+			}
 		while(fgets(temp,60,f_stream)!=NULL)
 		{
 			if(line==index)
@@ -276,8 +280,18 @@ int main(int argc, char *argv[])
 	}
 	char* cmd = argv[1];
 	char *arg=argv[2];
-	char *arg_2="";
-	if(argc>3)arg_2=argv[3];
+	char *arg_2=(char*)malloc(60);
+	if(argc>3)
+	{
+		strcpy(arg_2,argv[3]);
+		int index=4;
+		while(index<argc)
+		{
+			strcat(arg_2," ");
+			strcat(arg_2,argv[index]);
+			++index;
+		}
+	}
 	int index = arg==NULL ? 0 : atoi(arg);
 	switch(cmd[0])
 	{
@@ -291,7 +305,10 @@ int main(int argc, char *argv[])
 		show_cmd(index);
 		break;
 		case 'e':
-		exec_cmd(index,arg_2);
+		{
+			exec_cmd(index,arg_2);
+			free(arg_2);
+		}
 		break;
 		case 'f':
 		find(arg);
