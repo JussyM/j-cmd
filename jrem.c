@@ -1,12 +1,14 @@
 /**
- * jrem is a shell command to store
- * any other command that you don't want to forget
- * and use it at any time. The basic argument of jrem
- * is jrem add [cmd], jrem rm [index],
- * jrem show | jrem show [index], jrem exec [index],
- * jrem find [cmd]. More combination will be added with
- * time.
- * A great thanks to Maciej Rolecki who help me to correct the code
+ * jrem is a shell command to store any other command that you don't 
+ * want to forget and use it at any time. The basic argument of jrem is
+ * jrem -a [cmd] -> adds a command to your dictionary, 
+ * jrem -r [index] -> removes a command from your dictionary,
+ * jrem -s -> displays the dictionary,
+ * jrem -s [index] -> display a command at a given position of the dictionary, 
+ * jrem -e [index] -> executes the command found in the dictionary at index,
+ * jrem -f [cmd] -> looks up commands containing given string. 
+ * More combinations will be added with time.
+ * A great thanks to Maciej Rolecki who helped me to correct the code
  * and make it nice and functionnal.
  */
 #define _GNU_SOURCE
@@ -24,10 +26,10 @@ FILE * get_file_stream();
 FILE * get_dup_file_stream();
 /**
  * return an allocator of char* pointing to the home directory of the user
- * @brief file_name return the complet path of where to store the file.
- * @param file_id if the file_id ==0 simply mean the path to store a normal
- * file while if not the function will return the path to store the temporaire file
- * @return a path of the default file location.
+ * @brief file_name returns the complete path of where to store the file.
+ * @param file_id if the file_id==0 the file is stored at the default location
+ * else the function will return the path to the location of the temporary file.
+ * @return The path to the default file location.
  */
 char* file_name(int file_id)
 {
@@ -46,9 +48,9 @@ char* file_name(int file_id)
 }
 
 /**
- * @brief add_cmd simply store the input of the user to the config file
- * @param size number of argument given by the main
- * @param arg char** where all the user input are store
+ * @brief add_cmd Stores the input of the user in the config file.
+ * @param size number of arguments given by the main.
+ * @param arg char** where all the user input is stored.
  */
 void add_cmd(int size,char* arg[])
 {
@@ -56,7 +58,7 @@ void add_cmd(int size,char* arg[])
 	int fd= open(home_dir,O_WRONLY|O_CREAT|O_APPEND,0666);
 	if(fd<0)
 	{
-		printf("can not open config file\n");
+		printf("Cannot open configuration file.\n");
 		exit(1);
 	}else
 	{
@@ -83,12 +85,12 @@ void add_cmd(int size,char* arg[])
 
 
 /**
- * @brief rm_cmd delete an input from the default file.
- * The algorithm creat a temporaly file where to store
- * all the line that's not mention by the user this file
- * will now be rename into the real default file while
+ * @brief rm_cmd Deletes an input from the default file.
+ * The algorithm creates a temporaly file where it stores
+ * all the lines that are not mentioned by the user. This file
+ * will now be renamed as the default file while
  * the old_file will be removed.
- * @param index the line where the command will be removed
+ * @param index the line of the command to be removed.
  */
 void rm_cmd(int index)
 {
@@ -102,7 +104,7 @@ void rm_cmd(int index)
 		char * file_name_dup = file_name(TEMP_FILE_ID); 
 		if(f_stream==NULL)
 		{
-			printf("Error file not found to create the file use add command\n");
+			printf("Error, file not found. To create the file, use the add command.\n");
 			exit(1);
 		}
 		while(fgets(temp,60,f_stream)!=NULL)
@@ -122,10 +124,8 @@ void rm_cmd(int index)
 
 	}else
 	{
-		printf("can't remove command without index\n");
+		printf("Cannot remove a command without an index.\n");
 	}
-
-
 }
 /**
  * @brief show_cmd print to stdout all the command in the file.
