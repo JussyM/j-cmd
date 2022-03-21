@@ -88,7 +88,7 @@ void add_cmd(int size, char *arg[])
 
 /**
  * @brief rm_cmd Deletes an input from the default file.
- * The algorithm creates a temporaly file where it stores
+ * The algorithm creates a temporary file where it stores
  * all the lines that are not mentioned by the user. This file
  * will now be renamed as the default file while
  * the old_file will be removed.
