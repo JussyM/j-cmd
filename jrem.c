@@ -25,7 +25,7 @@
 FILE *get_file_stream();
 FILE *get_dup_file_stream();
 /**
- * return an allocator of char* pointing to the home directory of the user
+ * Return an allocator of char* pointing to the home directory of the user
  * @brief file_name returns the complete path of where to store the file.
  * @param file_id if the file_id==0 the file is stored at the default location
  * else the function will return the path to the location of the temporary file.
@@ -152,11 +152,11 @@ int show_cmd(int index)
 	if (f_stream == NULL)
 	{
 		printf("Nothing to show file do not exist add command to show\n");
-		exit(1);
+		return 0;
 	}
 	int line = 1;
-	int count = 0;
 	char str[60];
+	int ret = 0;
 	bool empty = true;
 	while (fgets(str, 60, f_stream) != NULL)
 	{
@@ -165,13 +165,14 @@ int show_cmd(int index)
 		{
 			printf("[%d] %s", line, str);
 			++line;
+			ret = 1;
 		}
 		else
 		{
 			if (line == index)
 			{
 				printf("[%d] %s", line, str);
-				count++;
+				ret = 2;
 				break;
 			}
 			else
@@ -181,11 +182,14 @@ int show_cmd(int index)
 		}
 	}
 	if (empty)
-		printf("No command register\n");
-
+	{
+		printf("No command registered\n");
+		exit(1);
+	}
 	fclose(f_stream);
-	return count;
+	return ret;
 }
+
 /**
  * @brief exec_cmd This function execute the command ask by the user by given the index.
  * Warning : This function use system to execute the command, no command
@@ -227,7 +231,7 @@ void exec_cmd(int index, char *arg)
  * It print all the occurrence seen in the file
  * @param arg the input given for searching in the file.
  */
-void find(char *arg)
+int find(char *arg)
 {
 	FILE *f_stream = get_file_stream();
 	if (f_stream == NULL)
@@ -249,6 +253,7 @@ void find(char *arg)
 	}
 	fclose(f_stream);
 	printf("We found %d occurrence(s).\n", cpt);
+	return cpt;
 }
 /**
  * @brief get_file_stream return the stream of the default file
@@ -307,7 +312,7 @@ int main(int argc, char *argv[])
 	{
 		int pos = 1;
 	repeat_cmd:
-		switch (cmd[1])
+		switch (cmd[pos])
 		{
 		case 'a':
 			add_cmd(argc, argv);
@@ -316,10 +321,41 @@ int main(int argc, char *argv[])
 			rm_cmd(index);
 			break;
 		case 's':
-			show_cmd(index);
+			int ret = show_cmd(index);
+			char answer;
+			if (ret == 0)
+			{
+				printf("Command not found\n");
+				break;
+			}
+			if (multicmd && tolower(cmd[2]) == 'e')
+			{
+				if (ret == 1)
+				{
+					printf("\nWould you like to execute it? Enter Y or N:\n");
+					scanf("%c", &answer);
+					if (tolower(answer) == 'y')
+					{
+						pos++;
+						in = index;
+						goto repeat_cmd;
+					}
+					else if (tolower(answer) == 'n')
+						printf("\nEnd\n");
+
+					else
+						printf("\nWWrong input. Only Y or N:\n");
+				}
+				else if (ret == 2)
+				{
+					printf("\nWhich one would you like to execute:\n");
+					scanf("%d", &in);
+					goto repeat_cmd;
+				}
+			}
 			break;
 		case 'e':
-			if (pos != 1)
+			if (pos == 2)
 				exec_cmd(in, NULL);
 			else
 			{
@@ -328,13 +364,18 @@ int main(int argc, char *argv[])
 			}
 			break;
 		case 'f':
-			find(arg);
+			int ret = find(arg);
 			if (multicmd && pos == 1)
 			{
-				pos++;
-				printf("Enter which command to execute :\n");
-				scanf("%d", &in);
-				goto repeat_cmd;
+				if (ret == 0)
+					printf("No command was found.\n");
+				else
+				{
+					pos++;
+					printf("Enter which command to execute :\n");
+					scanf("%d", &in);
+					goto repeat_cmd;
+				}
 			}
 			break;
 		case 'h':
@@ -368,5 +409,8 @@ int main(int argc, char *argv[])
 			break;
 		}
 	}
+	else
+		printf("\nWrong command\n");
+
 	return 0;
 }
