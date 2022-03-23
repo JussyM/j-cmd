@@ -58,9 +58,10 @@ void add_cmd(int size, char *arg[])
 {
 	char *home_dir = file_name(DEFAULT_FILE_ID);
 	int fd = open(home_dir, O_WRONLY | O_CREAT | O_APPEND, 0666);
+	bool comment = false;
 	if (fd < 0)
 	{
-		printf("Cannot open configuration file.\n");
+		printf("can not open config file\n");
 		exit(1);
 	}
 	else
@@ -70,10 +71,20 @@ void add_cmd(int size, char *arg[])
 		{
 			char *input = arg[i];
 			int arg_size = strlen(input);
+			if (strcmp(input, "-c") == 0)
+			{
+				comment = true;
+				input = "#";
+				arg_size = strlen(input);
+			}
 			if (size > 3)
 			{
+
 				write(fd, input, arg_size);
-				write(fd, " ", 1);
+				if (!comment)
+					write(fd, " ", 1);
+				else
+					comment = false;
 			}
 			else
 			{
@@ -198,6 +209,8 @@ void exec_cmd(int index, char *arg)
 		{
 			if (line == index)
 			{
+				if (strchr(temp, '#') != NULL)
+					strtok(temp, "#");
 				if (arg != NULL && arg[0] != '\0')
 				{
 					strtok(temp, "\n");
@@ -270,14 +283,23 @@ int main(int argc, char *argv[])
 {
 	if (argc < 2)
 	{
-		printf("Error Unknow Input\n");
+		printf("Command incomplete, use jrem help to understand how it works\n");
 		exit(1);
 	}
 	char *cmd = argv[1];
 	char *arg = argv[2];
-	char *arg_2 = "";
-	if (argc > 3)
-		arg_2 = argv[3];
+	char *arg_2=(char*)malloc(60);
+	if(argc>3)
+	{
+		strcpy(arg_2,argv[3]);
+		int index=4;
+		while(index<argc)
+		{
+			strcat(arg_2," ");
+			strcat(arg_2,argv[index]);
+			++index;
+		}
+	}
 	int index = arg == NULL ? 0 : atoi(arg);
 	bool multicmd = strlen(cmd) > 2;
 	int in = 0;
@@ -297,8 +319,10 @@ int main(int argc, char *argv[])
 			show_cmd(index);
 			break;
 		case 'e':
-			if(pos!=1)exec_cmd(in,NULL);
-			else exec_cmd(index, arg_2);
+			if (pos != 1)
+				exec_cmd(in, NULL);
+			else
+				exec_cmd(index, arg_2);
 			break;
 		case 'f':
 			find(arg);
