@@ -288,15 +288,15 @@ int main(int argc, char *argv[])
 	}
 	char *cmd = argv[1];
 	char *arg = argv[2];
-	char *arg_2=(char*)malloc(60);
-	if(argc>3)
+	char *arg_2 = (char *)malloc(60);
+	if (argc > 3)
 	{
-		strcpy(arg_2,argv[3]);
-		int index=4;
-		while(index<argc)
+		strcpy(arg_2, argv[3]);
+		int index = 4;
+		while (index < argc)
 		{
-			strcat(arg_2," ");
-			strcat(arg_2,argv[index]);
+			strcat(arg_2, " ");
+			strcat(arg_2, argv[index]);
 			++index;
 		}
 	}
@@ -322,7 +322,10 @@ int main(int argc, char *argv[])
 			if (pos != 1)
 				exec_cmd(in, NULL);
 			else
+			{
 				exec_cmd(index, arg_2);
+				free(arg_2);
+			}
 			break;
 		case 'f':
 			find(arg);
