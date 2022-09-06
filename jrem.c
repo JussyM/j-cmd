@@ -58,7 +58,7 @@ void add_cmd(int size,char* arg[])
 	if(fd<0)
 	{
 		printf("can not open config file\n");
-		exit(1);
+		exit(-1);
 	}else
 	{
 		int i=2;
@@ -102,7 +102,7 @@ void add_cmd(int size,char* arg[])
  */
 void rm_cmd(int index)
 {
-	char temp[60];
+	char temp[256];
 	int line =1;
 	if(index!=0)
 	{
@@ -115,7 +115,7 @@ void rm_cmd(int index)
 			printf("Error file not found to create the file use add command\n");
 			exit(1);
 		}
-		while(fgets(temp,60,f_stream)!=NULL)
+		while(fgets(temp,256,f_stream)!=NULL)
 		{
 			if(line!=index)
 			{
@@ -149,12 +149,12 @@ void show_cmd(int index)
 	if(f_stream==NULL)
 	{
 		printf("Nothing to show file do not exist add command to show\n");
-		exit(1);
+		exit(-1);
 	}
 	int line =1;
-	char str[60];
+	char str[256];
 	bool empty=true;
-	while(fgets(str,60,f_stream)!=NULL)
+	while(fgets(str,256,f_stream)!=NULL)
 	{
 		empty=false;
 		if(index==0)
@@ -188,7 +188,7 @@ void show_cmd(int index)
  */
 void exec_cmd(int index, char* arg)
 {
-	char temp[60];
+	char temp[256];
 	int line =1;
 	if(index!=0)
 	{
@@ -198,7 +198,7 @@ void exec_cmd(int index, char* arg)
 				printf("Error find not found to create the file use add command\n"); 
 				exit(1);
 			}
-		while(fgets(temp,60,f_stream)!=NULL)
+		while(fgets(temp,256,f_stream)!=NULL)
 		{
 			if(line==index)
 			{
@@ -227,10 +227,10 @@ void find(char *arg)
 		printf("Error find not found to create the file use add command\n");
 		exit(1);
 	}
-	char temp[60];
+	char temp[256];
 	int line=1;
 	int cpt=0;
-	while(fgets(temp,60,f_stream)!=NULL)
+	while(fgets(temp,256,f_stream)!=NULL)
 	{
 		if(strstr(temp,arg)!=NULL)
 		{
