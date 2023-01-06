@@ -245,7 +245,7 @@ void update_if_necessary(cmd *cmd_) {
  */
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        printf("command incomplet use jrem help\n");
+        printf("command incomplet use jrem -h for more\n");
         exit(1);
     }
 
@@ -286,13 +286,11 @@ int main(int argc, char *argv[]) {
                 break;
             case 'e': {
                 char *arg_2 = (char *) malloc(256);
-                if (argc > 3) {
+                if (argc> 3) {
                     strcpy(arg_2, argv[3]);
-                    int index = 4;
-                    while (index < argc) {
+                    while (optind < argc) {
                         strcat(arg_2, " ");
-                        strcat(arg_2, argv[index]);
-                        ++index;
+                        strcat(arg_2, argv[optind++]);
                     }
                 }
                 exec_cmd(index, arg_2);
@@ -318,7 +316,7 @@ int main(int argc, char *argv[]) {
                        "\n $jrem -e 2"
                        "\ndefault cmd which do not necessary take argument"
                        "\n $jrem -s"
-                       "\n $jrem -s 1"
+                       "\n $jrem -s1"
                        "\njrem allow to add comment beside a command to use that option you must write:"
                        "\n $jrem -a ... -c ..."
                        "\nAny other option will be rejected.\n");
